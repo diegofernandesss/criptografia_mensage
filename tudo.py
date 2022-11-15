@@ -20,7 +20,7 @@ while True:
         public_key = private_key.public_key()
 
         print('Chave Gerada')
-    print("Chaves geradas.")
+
     if op== 2:
         print('fechando')
         break
