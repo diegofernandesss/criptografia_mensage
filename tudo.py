@@ -1,26 +1,22 @@
-import rsa
+from function.criptografia import generate_key
 
-while True:
-    print('--------- Menu --------------')
-    print('selecione uma opção: ')
-    print('1 - Gerar chave pública e privada!')
-    print('2 - Fechar Programa!')
-    print('-----------------------------\n')
+def main():
+    while True:
+        print('--------- Menu --------------')
+        print('selecione uma opção: ')
+        print('1 - Gerar chave pública e privada!')
+        print('2 - Fechar Programa!')
+        print('-----------------------------\n')
 
-    op = int(input())
+        op = int(input())
 
-    if op == 1:
-        #gerando chave privada
-        private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048,
-            backend=default_backend()
-        )
-        #gerando chave publica
-        public_key = private_key.public_key()
+        if op == 1:
+            generate_key()
 
-        print('Chave Gerada')
-
-    if op== 2:
-        print('fechando')
-        break
+            print('Chave Gerada')
+        if op== 2:
+            print('fechando')
+            break
+        
+if __name__== "__main__":
+  main()
