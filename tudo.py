@@ -17,6 +17,3 @@ def main():
         if op== 2:
             print('fechando')
             break
-        
-if __name__== "__main__":
-  main()
