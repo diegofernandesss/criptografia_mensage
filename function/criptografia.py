@@ -1,50 +1,54 @@
 import hashlib
-
-from cryptography.hazmat.primitives import hashes,serialization
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
+import rsa
+import pickle
+import zipfile
+from zipfile import ZipFile
 
 # gerando as chaves
 def generate_key():
-    #gerando chave privada
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=2048,
-        backend=default_backend()
-    )
-    #gerando chave publica
-    public_key = private_key.public_key()
-
-    pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption()
-    )
-
-    with open('private_key.pem', 'wb') as f:
-        f.write(pem)
-
-    pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
-    )
-
-    with open('public_key.pem', 'wb') as f:
-        f.write(pem)
-
+    public_key,private_key = rsa.newkeys(1024)
+    pickle.dump(public_key, open('files/public_key.pkl','wb'),protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(private_key, open('files/private_key.pkl','wb'),protocol=pickle.HIGHEST_PROTOCOL)
 
 #Pegando a chave publica
 def take_public_key():
-  with open('public_key.pem','rb') as key_file:
-    public_key = serialization.load_pem_public_key(
-      key_file.read(),
-      backend=default_backend()
-    )
+    public_key = pickle.load(open('files/public_key.pkl','rb'))
     return public_key
 
+def take_private_key():
+    private_key = pickle.load(open('files/private_key.pkl','rb'))
+    return private_key
+
+def take_hash_encryption():
+    hash_encryption = pickle.load(open('files/hash_encrypt.pkl','rb'))
+    return hash_encryption
 #Gerando o hash
 def generate_hash(arquivo):
   hash = hashlib.new('ripemd160')
   hash.update(arquivo.encode('utf-8'))
   hash = hash.hexdigest()
   return hash
+
+def compare_hashes(received_hash,generate_hash):
+    if(received_hash==generate_hash):
+        return True
+    return False
+
+def encryption_algorithm(hash,public_key):
+    encryption = rsa.encrypt(hash.encode('utf-8'),public_key)
+    return encryption
+
+def dencryption_algorithm(hash_encrypt,private_key):
+    dencryption = rsa.decrypt(hash_encrypt,private_key).decode()
+    return dencryption
+
+def compact_files():
+    zipe_file = zipfile.ZipFile('files/documents.rar', 'w', zipfile.ZIP_DEFLATED)
+    zipe_file.write('files/hash_encrypt.pkl')
+    zipe_file.write('files/file.txt')
+    zipe_file.close()
+
+def descompact_files():
+    zipe_file = ZipFile('files/documents.rar', 'r')
+    zipe_file.extractall()
+    zipe_file.close()

@@ -1,11 +1,16 @@
 from function.open_txt import open_txt 
-from function.criptografia import take_public_key,generate_hash
+from function.criptografia import *
+import rsa
+import pickle
+
 def main():
-  arquivo = open_txt('arquivo.txt')
+  file = open_txt('files/file.txt')
   public_key = take_public_key()
-  hash = generate_hash(arquivo)
+  hash = generate_hash(file)
+  hash_encrypt = encryption_algorithm(hash, public_key)
+  pickle.dump(hash_encrypt, open('files/hash_encrypt.pkl','wb'),protocol=pickle.HIGHEST_PROTOCOL)
+  compact_files()
   print('Hash: ',hash)
-  print('Public Key: ',public_key)
 
 if __name__== "__main__":
   main()
